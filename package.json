@@ -1,0 +1,20 @@
+{
+  "name": "randtopic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss -i ./src/tailwind.css -o ./styles.css --minify",
+    "watch:css": "tailwindcss -i ./src/tailwind.css -o ./styles.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "nes.css": "^2.2.1",
+    "tailwindcss": "^4.3.3"
+  }
+}

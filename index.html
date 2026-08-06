@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>RANDTOPIC</title>
   <meta name="description" content="Entrena tu memoria y tu oratoria: elige un tema al azar, apréndelo en 15 minutos y explícalo en 1." />
-  <meta name="theme-color" content="#0b0c1a" />
+  <meta name="theme-color" content="#f4edff" />
 
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon.svg" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
 
+  <!-- nes.css (acentos "juego": iconos + globo de diálogo) va empaquetado dentro de styles.css -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -46,10 +47,12 @@
 
       <div class="stats-row">
         <div class="stat-card">
+          <i class="nes-icon trophy is-small stat-icon" aria-hidden="true"></i>
           <span id="stat-count" class="stat-value">0</span>
           <span class="stat-label">temas explorados</span>
         </div>
         <div class="stat-card">
+          <i class="nes-icon star is-small stat-icon" aria-hidden="true"></i>
           <span id="stat-streak" class="stat-value">0</span>
           <span class="stat-label">días de racha</span>
         </div>
@@ -85,7 +88,7 @@
         <span id="study-time-label" class="ring-time">15:00</span>
       </div>
 
-      <p class="phase-hint">Investiga, lee, mira videos: usa el tiempo para aprender todo lo que puedas.</p>
+      <p class="phase-hint nes-balloon from-left">Investiga, lee, mira videos: usa el tiempo para aprender todo lo que puedas.</p>
 
       <div class="actions-row">
         <button id="study-pause-btn" class="btn-ghost">Pausar</button>
@@ -107,7 +110,7 @@
         <span id="speak-time-label" class="ring-time">01:00</span>
       </div>
 
-      <p class="phase-hint">Habla como si le enseñaras el tema a otra persona. No te detengas a corregirte.</p>
+      <p class="phase-hint nes-balloon from-left">Habla como si le enseñaras el tema a otra persona. No te detengas a corregirte.</p>
 
       <div class="actions-row">
         <button id="speak-finish-btn" class="btn-primary">Terminé antes</button>
@@ -117,7 +120,7 @@
 
     <!-- SUMMARY -->
     <section id="screen-summary" class="screen">
-      <p class="phase-label">SESIÓN COMPLETADA</p>
+      <p class="phase-label"><i class="nes-icon trophy is-small" aria-hidden="true"></i> SESIÓN COMPLETADA</p>
       <h2 id="summary-topic-title" class="phase-topic"></h2>
       <p class="phase-hint">¿Qué tan segura te sentiste explicando este tema?</p>
 

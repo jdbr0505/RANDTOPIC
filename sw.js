@@ -1,5 +1,5 @@
 /* Service worker: cache-first para permitir uso offline tras la primera visita */
-const CACHE_NAME = "randtopic-v1";
+const CACHE_NAME = "randtopic-v2";
 const ASSETS = [
   "./",
   "./index.html",
