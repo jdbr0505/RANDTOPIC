@@ -166,13 +166,36 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 20px;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  /* en el splash el logo protagonista ya presenta la marca: la barra
+     superior se retira para no competir ni dejar el texto "solo"
+     (alternada por JS en showScreen(), no por :has(), que en algunos
+     motores no reevalúa bien combinado con cascade layers) */
+  .topbar.is-hidden {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
   }
 
   .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 700;
     letter-spacing: 0.5px;
     font-size: 1.15rem;
     color: var(--color-ink);
+  }
+
+  .brand-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    border: 2px solid var(--color-ink);
+    box-shadow: 2px 2px 0 var(--color-ink);
+    object-fit: cover;
   }
 
   .brand-accent {
@@ -615,7 +638,11 @@
   .modal-close:hover { transform: rotate(90deg); }
 
   /* ---------- SPLASH ---------- */
-  .splash-screen { position: relative; padding-top: 8px; }
+  .splash-screen {
+    position: relative;
+    padding-top: 4px;
+    max-width: 560px;
+  }
 
   .splash-particles {
     position: absolute;
@@ -658,25 +685,43 @@
   }
 
   .splash-logo {
-    width: 168px;
+    width: 232px;
     height: auto;
-    filter: drop-shadow(0 14px 0 rgba(43, 33, 64, 0.18)) drop-shadow(0 0 32px rgba(255, 111, 94, 0.35));
+    filter: drop-shadow(0 18px 0 rgba(43, 33, 64, 0.18)) drop-shadow(0 0 40px rgba(255, 111, 94, 0.4));
     animation: splashLogoFloat 3.2s ease-in-out infinite;
   }
   @keyframes splashLogoFloat {
     0%, 100% { transform: translateY(0) rotate(-3deg); }
-    50% { transform: translateY(-12px) rotate(3deg); }
+    50% { transform: translateY(-14px) rotate(3deg); }
   }
 
   .splash-title {
     position: relative;
     z-index: 1;
-    margin: 6px 0 2px;
+    margin: 10px 0 4px;
     font-family: var(--font-pixel);
-    font-size: 1.55rem;
+    font-size: 1.9rem;
     line-height: 1.6;
     letter-spacing: 1px;
     text-align: center;
+  }
+
+  .splash-intro {
+    position: relative;
+    z-index: 1;
+    max-width: 380px;
+    margin: 4px auto 0;
+    color: var(--color-ink-soft);
+    font-weight: 700;
+    font-size: 0.94rem;
+    line-height: 1.55;
+    text-align: center;
+  }
+
+  .splash-steps {
+    max-width: 360px;
+    margin-top: 24px;
+    margin-bottom: 4px;
   }
   .splash-title-word {
     display: inline-block;
@@ -856,6 +901,8 @@
     .btn-random { width: 190px; height: 190px; font-size: 1.1rem; }
     .ring-wrap { width: 190px; height: 190px; }
     .ring-time { font-size: 2rem; }
+    .splash-logo { width: 180px; }
+    .splash-title { font-size: 1.5rem; }
   }
 }
 

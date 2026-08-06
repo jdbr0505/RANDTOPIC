@@ -102,6 +102,8 @@ function qsa(sel) { return document.querySelectorAll(sel); }
 function showScreen(name) {
   Object.values(els).forEach((el) => el.classList.remove("active"));
   els[name].classList.add("active");
+  // la barra superior se oculta solo en el splash (el logo grande ya presenta la marca ahí)
+  qs(".topbar").classList.toggle("is-hidden", name === "splash");
 }
 
 function fmtTime(totalSeconds) {
@@ -439,6 +441,7 @@ function showDuelSummary() {
 /* ---------- 6. EVENTOS ---------- */
 window.addEventListener("DOMContentLoaded", () => {
   updateStatsUI();
+  showScreen("splash"); // sincroniza el estado del topbar con la pantalla ya activa en el HTML
 
   qs("#splash-play-btn").addEventListener("click", () => showScreen("home"));
 

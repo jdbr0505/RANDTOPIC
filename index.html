@@ -15,14 +15,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
 
   <!-- nes.css (acentos "juego": iconos + globo de diálogo) va empaquetado dentro de styles.css -->
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body>
 
   <div class="bg-glow"></div>
 
   <header class="topbar">
-    <span class="brand">RAND<span class="brand-accent">TOPIC</span></span>
+    <span class="brand"><img src="icon.png" alt="" class="brand-icon" />RAND<span class="brand-accent">TOPIC</span></span>
     <div class="topbar-actions">
       <button id="btn-help" class="icon-btn" aria-label="Ayuda">?</button>
       <button id="btn-about" class="icon-btn" aria-label="Acerca de">i</button>
@@ -45,6 +45,17 @@
 
       <p class="tagline">Entrena tu memoria. Domina tu oratoria.</p>
 
+      <p class="splash-intro">
+        Presiona el dado, cae un tema al azar de docenas de categorías —ciencia, historia, arte, mitología y más—.
+        Sin pistas, sin trampa: solo tú, el tema y el reloj.
+      </p>
+
+      <div class="how-it-works splash-steps">
+        <div class="step"><span class="step-num">1</span><span>Elige un tema al azar</span></div>
+        <div class="step"><span class="step-num">2</span><span>Estúdialo 15 minutos</span></div>
+        <div class="step"><span class="step-num">3</span><span>Explícalo en voz alta 1 minuto</span></div>
+      </div>
+
       <button id="splash-play-btn" class="btn-primary splash-play-btn">▶ JUGAR</button>
     </section>
 
@@ -53,12 +64,6 @@
       <button id="btn-random" class="btn-random">
         <span class="btn-random-label">TEMA<br />ALEATORIO</span>
       </button>
-
-      <div class="how-it-works">
-        <div class="step"><span class="step-num">1</span><span>Elige un tema al azar</span></div>
-        <div class="step"><span class="step-num">2</span><span>Estúdialo 15 minutos</span></div>
-        <div class="step"><span class="step-num">3</span><span>Explícalo en voz alta 1 minuto</span></div>
-      </div>
 
       <div class="stats-row">
         <div class="stat-card">
@@ -261,6 +266,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
