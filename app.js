@@ -177,27 +177,140 @@ function pickRandomTopic(excludeTitle) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-/* ---------- audio: beep sencillo con WebAudio (sin archivos externos) ---------- */
+/* ---------- audio: sintetizado con WebAudio (sin archivos externos) ---------- */
 let audioCtx;
+function getAudioCtx() {
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
 function beep(times = 3) {
   try {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    let t = audioCtx.currentTime;
+    const ctx = getAudioCtx();
+    let t = ctx.currentTime;
     for (let i = 0; i < times; i++) {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = "sine";
       osc.frequency.value = 880;
       gain.gain.setValueAtTime(0.0001, t);
       gain.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
-      osc.connect(gain).connect(audioCtx.destination);
+      osc.connect(gain).connect(ctx.destination);
       osc.start(t);
       osc.stop(t + 0.3);
       t += 0.4;
     }
   } catch (e) { /* audio no disponible, se ignora */ }
   if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+}
+
+/* traqueteo de dado: ráfagas de ruido filtrado, como si golpeara sus caras */
+function diceRollSound() {
+  try {
+    const ctx = getAudioCtx();
+    const clacks = [0, 0.12, 0.24, 0.4, 0.6, 0.85];
+    clacks.forEach((offset) => {
+      const t = ctx.currentTime + offset;
+      const bufferSize = ctx.sampleRate * 0.04;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.value = 1200 + Math.random() * 800;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.35, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+      noise.connect(filter).connect(gain).connect(ctx.destination);
+      noise.start(t);
+      noise.stop(t + 0.08);
+    });
+  } catch (e) { /* audio no disponible, se ignora */ }
+  if (navigator.vibrate) navigator.vibrate([30, 60, 30, 60, 30, 90, 30]);
+}
+
+/* campanada brillante: arpegio ascendente al revelar el tema */
+function chimeSound() {
+  try {
+    const ctx = getAudioCtx();
+    const notes = [523.25, 659.25, 783.99]; // Do-Mi-Sol
+    notes.forEach((freq, i) => {
+      const t = ctx.currentTime + i * 0.09;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.25, t + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.5);
+    });
+  } catch (e) { /* audio no disponible, se ignora */ }
+}
+
+/* ---------- confeti: ráfaga de partículas en canvas al revelar el tema ---------- */
+function burstConfetti(anchorEl) {
+  const rect = anchorEl.getBoundingClientRect();
+  const canvas = document.createElement("canvas");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:80;";
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+
+  const colors = ["#ff6f5e", "#7c5cff", "#1fd1a6", "#ffc542", "#2b2140"];
+  const originX = rect.left + rect.width / 2;
+  const originY = rect.top + 24;
+  const particles = Array.from({ length: 36 }, () => {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 3 + Math.random() * 5;
+    return {
+      x: originX,
+      y: originY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      size: 4 + Math.random() * 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * Math.PI,
+      spin: (Math.random() - 0.5) * 0.4,
+      life: 1,
+    };
+  });
+
+  const start = performance.now();
+  function frame(now) {
+    const elapsed = now - start;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    for (const p of particles) {
+      p.vy += 0.15;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.spin;
+      p.life = 1 - elapsed / 900;
+      if (p.life > 0) {
+        alive = true;
+        ctx.save();
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
+      }
+    }
+    if (alive) requestAnimationFrame(frame);
+    else canvas.remove();
+  }
+  requestAnimationFrame(frame);
+  // red de seguridad: si la pestaña está en segundo plano, rAF se pausa y
+  // el canvas nunca se limpiaría solo; esto garantiza que desaparezca igual
+  setTimeout(() => canvas.remove(), 1500);
 }
 
 /* ---------- localStorage: historial y racha ---------- */
@@ -290,9 +403,31 @@ function revealTopic() {
       catEl.textContent = finalTopic.cat;
       card.classList.remove("shuffling");
       card.classList.add("landed");
+      chimeSound();
+      burstConfetti(card);
       setTimeout(() => card.classList.remove("landed"), 500);
     }
   }, 70);
+}
+
+/* Lanza la animación 3D del dado y, al terminar, revela el tema */
+function launchDice() {
+  const launcher = qs("#btn-random");
+  if (launcher.disabled) return;
+  launcher.disabled = true;
+
+  const cube = qs("#die-cube");
+  const angleX = 720 + Math.floor(Math.random() * 4) * 90;
+  const angleY = 720 + Math.floor(Math.random() * 4) * 90;
+  cube.style.setProperty("--die-final-x", `${angleX}deg`);
+  cube.style.setProperty("--die-final-y", `${angleY}deg`);
+  cube.classList.add("rolling");
+  diceRollSound();
+  setTimeout(() => {
+    cube.classList.remove("rolling");
+    launcher.disabled = false;
+    revealTopic();
+  }, 950);
 }
 
 /* Devuelve " · Turno de X" cuando hay un duelo activo, o "" en modo individual */
@@ -445,7 +580,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   qs("#splash-play-btn").addEventListener("click", () => showScreen("home"));
 
-  qs("#btn-random").addEventListener("click", revealTopic);
+  qs("#btn-random").addEventListener("click", launchDice);
   qs("#reveal-start-btn").addEventListener("click", startStudyPhase);
   qs("#reveal-again-btn").addEventListener("click", revealTopic);
   qs("#reveal-home-btn").addEventListener("click", goHome);
