@@ -87,10 +87,11 @@ const SPEAK_SECONDS = 60;
 const state = {
   currentTopic: null,
   timer: { remaining: 0, total: 0, running: false, intervalId: null, phase: null },
+  duel: null, // { active, players: [p1, p2], turnIndex, ratings: [n, n] }
 };
 
 const els = {};
-["home", "reveal", "study", "speak", "summary"].forEach((id) => {
+["splash", "home", "reveal", "study", "speak", "summary", "mytopics", "duel-setup", "duel-rate", "duel-summary"].forEach((id) => {
   els[id] = document.getElementById(`screen-${id}`);
 });
 
@@ -109,10 +110,67 @@ function fmtTime(totalSeconds) {
   return `${m}:${s}`;
 }
 
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ---------- temas personalizados ("Mis temas") ---------- */
+const CUSTOM_TOPICS_KEY = "randtopic_custom_topics_v1";
+
+function getCustomTopics() {
+  try { return JSON.parse(localStorage.getItem(CUSTOM_TOPICS_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveCustomTopics(list) {
+  localStorage.setItem(CUSTOM_TOPICS_KEY, JSON.stringify(list));
+}
+
+function addCustomTopic(cat, title) {
+  const list = getCustomTopics();
+  list.unshift({ cat, title });
+  saveCustomTopics(list);
+  renderMyTopicsList();
+}
+
+function deleteCustomTopic(index) {
+  const list = getCustomTopics();
+  list.splice(index, 1);
+  saveCustomTopics(list);
+  renderMyTopicsList();
+}
+
+function renderMyTopicsList() {
+  const list = getCustomTopics();
+  const ul = qs("#mytopic-list");
+  const empty = qs("#mytopic-empty");
+  ul.innerHTML = "";
+  empty.style.display = list.length ? "none" : "block";
+  list.forEach((t, i) => {
+    const li = document.createElement("li");
+    li.className = "mytopic-item";
+    li.innerHTML = `<span class="mytopic-item-cat">${escapeHtml(t.cat)}</span><span class="mytopic-item-title">${escapeHtml(t.title)}</span>`;
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "mytopic-delete";
+    delBtn.setAttribute("aria-label", "Eliminar tema");
+    delBtn.textContent = "×";
+    delBtn.addEventListener("click", () => deleteCustomTopic(i));
+    li.appendChild(delBtn);
+    ul.appendChild(li);
+  });
+}
+
+function getTopicPool() {
+  return TOPICS.concat(getCustomTopics());
+}
+
 function pickRandomTopic(excludeTitle) {
-  let pool = TOPICS;
-  if (excludeTitle && TOPICS.length > 1) {
-    pool = TOPICS.filter((t) => t.title !== excludeTitle);
+  let pool = getTopicPool();
+  if (excludeTitle && pool.length > 1) {
+    pool = pool.filter((t) => t.title !== excludeTitle);
   }
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -202,19 +260,18 @@ function setRingProgress(ringEl, fraction) {
 /* Home */
 function goHome() {
   clearInterval(state.timer.intervalId);
+  state.duel = null;
   showScreen("home");
 }
 
-/* Reveal: animación de "ruleta" de títulos y luego fija el tema */
+/* Reveal: animación de "ruleta" de títulos y luego fija el tema (solo categoría + título, sin pistas) */
 function revealTopic() {
   const titleEl = qs("#reveal-title");
   const catEl = qs("#reveal-cat");
-  const textEl = qs("#reveal-text");
   const card = qs("#reveal-card");
 
   showScreen("reveal");
   card.classList.add("shuffling");
-  textEl.textContent = "";
   catEl.textContent = "";
 
   let shuffles = 0;
@@ -229,7 +286,6 @@ function revealTopic() {
       state.currentTopic = finalTopic;
       titleEl.textContent = finalTopic.title;
       catEl.textContent = finalTopic.cat;
-      textEl.textContent = finalTopic.text;
       card.classList.remove("shuffling");
       card.classList.add("landed");
       setTimeout(() => card.classList.remove("landed"), 500);
@@ -237,10 +293,19 @@ function revealTopic() {
   }, 70);
 }
 
+/* Devuelve " · Turno de X" cuando hay un duelo activo, o "" en modo individual */
+function duelTurnSuffix() {
+  if (state.duel && state.duel.active) {
+    return ` · Turno de ${state.duel.players[state.duel.turnIndex]}`;
+  }
+  return "";
+}
+
 /* Study: 15 minutos */
 function startStudyPhase() {
   showScreen("study");
   qs("#study-topic-title").textContent = state.currentTopic.title;
+  qs("#study-phase-label").textContent = "FASE DE ESTUDIO" + duelTurnSuffix();
   const ring = qs("#study-ring-progress");
   const label = qs("#study-time-label");
   qs("#study-pause-btn").textContent = "Pausar";
@@ -263,6 +328,7 @@ function startStudyPhase() {
 function startSpeakPhase() {
   showScreen("speak");
   qs("#speak-topic-title").textContent = state.currentTopic.title;
+  qs("#speak-phase-label").textContent = "¡A EXPLICAR EN VOZ ALTA!" + duelTurnSuffix();
   const ring = qs("#speak-ring-progress");
   const label = qs("#speak-time-label");
 
@@ -275,18 +341,27 @@ function startSpeakPhase() {
     },
     () => {
       beep(2);
-      finishSession(null);
+      handleSpeakEnd();
     }
   );
 }
 
-/* Summary */
+/* Al terminar de hablar: a calificación individual, o a calificar al jugador del duelo */
+function handleSpeakEnd() {
+  if (state.duel && state.duel.active) {
+    showDuelRateScreen();
+  } else {
+    finishSession(null);
+  }
+}
+
+/* Summary (modo individual) */
 function finishSession(confidence) {
   showScreen("summary");
   qs("#summary-topic-title").textContent = state.currentTopic.title;
-  qsa(".confidence-btn").forEach((b) => b.classList.remove("selected"));
+  qsa("#screen-summary .confidence-btn").forEach((b) => b.classList.remove("selected"));
   if (confidence) {
-    const btn = qs(`.confidence-btn[data-value="${confidence}"]`);
+    const btn = qs(`#screen-summary .confidence-btn[data-value="${confidence}"]`);
     if (btn) btn.classList.add("selected");
     saveHistoryEntry({
       title: state.currentTopic.title,
@@ -297,9 +372,75 @@ function finishSession(confidence) {
   }
 }
 
+/* ---------- Modo Duelo ---------- */
+function beginDuel(e) {
+  e.preventDefault();
+  const p1 = qs("#duel-p1-name").value.trim() || "Jugador 1";
+  const p2 = qs("#duel-p2-name").value.trim() || "Jugador 2";
+  state.duel = { active: true, players: [p1, p2], turnIndex: 0, ratings: [null, null] };
+  revealTopic();
+}
+
+function showDuelRateScreen() {
+  showScreen("duel-rate");
+  qs("#duel-rate-player").textContent = state.duel.players[state.duel.turnIndex];
+  qs("#duel-rate-topic").textContent = state.currentTopic.title;
+  qsa("#duel-rate-row .confidence-btn").forEach((b) => b.classList.remove("selected"));
+}
+
+function handleDuelRate(value) {
+  state.duel.ratings[state.duel.turnIndex] = value;
+  saveHistoryEntry({
+    title: state.currentTopic.title,
+    cat: state.currentTopic.cat,
+    confidence: value,
+    date: new Date().toISOString().slice(0, 10),
+  });
+
+  if (state.duel.turnIndex === 0) {
+    state.duel.turnIndex = 1;
+    startStudyPhase();
+  } else {
+    showDuelSummary();
+  }
+}
+
+function showDuelSummary() {
+  showScreen("duel-summary");
+  const [p1, p2] = state.duel.players;
+  const [r1, r2] = state.duel.ratings;
+
+  qs("#duel-summary-title").textContent = state.currentTopic.title;
+  qs("#duel-p1-label").textContent = p1;
+  qs("#duel-p2-label").textContent = p2;
+  qs("#duel-p1-score").textContent = r1 != null ? `${r1}/5` : "–";
+  qs("#duel-p2-score").textContent = r2 != null ? `${r2}/5` : "–";
+
+  const cardP1 = qs("#duel-result-p1");
+  const cardP2 = qs("#duel-result-p2");
+  cardP1.classList.remove("duel-winner");
+  cardP2.classList.remove("duel-winner");
+
+  let winnerText;
+  if (r1 > r2) {
+    cardP1.classList.add("duel-winner");
+    winnerText = `🏆 ¡${p1} gana el duelo!`;
+  } else if (r2 > r1) {
+    cardP2.classList.add("duel-winner");
+    winnerText = `🏆 ¡${p2} gana el duelo!`;
+  } else {
+    winnerText = "🤝 ¡Empate! Ambos lo hicieron igual de bien.";
+  }
+  qs("#duel-winner-text").textContent = winnerText;
+
+  state.duel.active = false;
+}
+
 /* ---------- 6. EVENTOS ---------- */
 window.addEventListener("DOMContentLoaded", () => {
   updateStatsUI();
+
+  qs("#splash-play-btn").addEventListener("click", () => showScreen("home"));
 
   qs("#btn-random").addEventListener("click", revealTopic);
   qs("#reveal-start-btn").addEventListener("click", startStudyPhase);
@@ -318,11 +459,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   qs("#speak-finish-btn").addEventListener("click", () => {
     clearInterval(state.timer.intervalId);
-    finishSession(null);
+    handleSpeakEnd();
   });
   qs("#speak-cancel-btn").addEventListener("click", goHome);
 
-  qsa(".confidence-btn").forEach((btn) => {
+  qsa("#screen-summary .confidence-btn").forEach((btn) => {
     btn.addEventListener("click", () => finishSession(Number(btn.dataset.value)));
   });
 
@@ -334,6 +475,38 @@ window.addEventListener("DOMContentLoaded", () => {
   qsa("[data-close-modal]").forEach((btn) =>
     btn.addEventListener("click", (e) => e.target.closest(".modal").classList.remove("open"))
   );
+
+  /* Mis temas */
+  qs("#home-mytopics-btn").addEventListener("click", () => {
+    renderMyTopicsList();
+    showScreen("mytopics");
+  });
+  qs("#mytopics-home-btn").addEventListener("click", goHome);
+  qs("#mytopic-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const catInput = qs("#mytopic-cat");
+    const titleInput = qs("#mytopic-title");
+    const cat = catInput.value.trim();
+    const title = titleInput.value.trim();
+    if (!cat || !title) return;
+    addCustomTopic(cat, title);
+    catInput.value = "";
+    titleInput.value = "";
+    titleInput.focus();
+  });
+
+  /* Modo Duelo */
+  qs("#home-duel-btn").addEventListener("click", () => showScreen("duel-setup"));
+  qs("#duel-setup-form").addEventListener("submit", beginDuel);
+  qs("#duel-setup-cancel-btn").addEventListener("click", goHome);
+  qsa("#duel-rate-row .confidence-btn").forEach((btn) => {
+    btn.addEventListener("click", () => handleDuelRate(Number(btn.dataset.value)));
+  });
+  qs("#duel-new-btn").addEventListener("click", () => {
+    state.duel = null;
+    showScreen("duel-setup");
+  });
+  qs("#duel-summary-home-btn").addEventListener("click", goHome);
 
   // Registro del service worker para funcionamiento offline / instalación PWA
   if ("serviceWorker" in navigator) {

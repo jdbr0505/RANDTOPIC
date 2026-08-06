@@ -40,6 +40,7 @@
   --font-display: "Fredoka", system-ui, sans-serif;
   --font-body: "Nunito", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+  --font-pixel: "Press Start 2P", var(--font-mono);
 
   --radius-clay-lg: 28px;
   --radius-clay-md: 20px;
@@ -413,14 +414,6 @@
     line-height: 1.25;
   }
 
-  .reveal-text {
-    color: var(--color-ink-soft);
-    font-size: 0.96rem;
-    line-height: 1.65;
-    margin: 0;
-    font-weight: 600;
-  }
-
   .actions-col {
     display: flex;
     flex-direction: column;
@@ -621,6 +614,243 @@
   }
   .modal-close:hover { transform: rotate(90deg); }
 
+  /* ---------- SPLASH ---------- */
+  .splash-screen { position: relative; padding-top: 8px; }
+
+  .splash-particles {
+    position: absolute;
+    inset: -40px -20px auto -20px;
+    height: 380px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .splash-particles::before,
+  .splash-particles::after {
+    content: "✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧";
+    position: absolute;
+    inset: 0;
+    color: var(--color-warn);
+    font-size: 1.1rem;
+    letter-spacing: 3vw;
+    text-align: center;
+    opacity: 0.55;
+    animation: sparkleDrift 7s ease-in-out infinite;
+  }
+  .splash-particles::after {
+    top: 60%;
+    color: var(--color-accent);
+    letter-spacing: 4vw;
+    animation-duration: 9s;
+    animation-direction: reverse;
+    opacity: 0.4;
+  }
+  @keyframes sparkleDrift {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+    50% { transform: translateY(-14px) rotate(2deg); opacity: 0.65; }
+  }
+
+  .splash-logo-wrap {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .splash-logo {
+    width: 168px;
+    height: auto;
+    filter: drop-shadow(0 14px 0 rgba(43, 33, 64, 0.18)) drop-shadow(0 0 32px rgba(255, 111, 94, 0.35));
+    animation: splashLogoFloat 3.2s ease-in-out infinite;
+  }
+  @keyframes splashLogoFloat {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-12px) rotate(3deg); }
+  }
+
+  .splash-title {
+    position: relative;
+    z-index: 1;
+    margin: 6px 0 2px;
+    font-family: var(--font-pixel);
+    font-size: 1.55rem;
+    line-height: 1.6;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  .splash-title-word {
+    display: inline-block;
+    color: var(--color-primary);
+    text-shadow:
+      3px 3px 0 var(--color-ink),
+      6px 6px 0 rgba(43, 33, 64, 0.25);
+    animation: splashTitlePulse 2.4s ease-in-out infinite;
+  }
+  .splash-title-accent {
+    color: var(--color-warn);
+    animation-delay: 0.15s;
+  }
+  @keyframes splashTitlePulse {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.04); }
+  }
+
+  .splash-play-btn {
+    width: auto;
+    padding: 16px 48px;
+    margin-top: 18px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, var(--color-warn), var(--color-primary));
+    animation: splashPlayGlow 1.8s ease-in-out infinite;
+  }
+  @keyframes splashPlayGlow {
+    0%, 100% { box-shadow: 5px 5px 0 var(--color-ink), 0 0 0 rgba(255, 197, 66, 0); }
+    50% { box-shadow: 5px 5px 0 var(--color-ink), 0 0 26px rgba(255, 197, 66, 0.65); }
+  }
+
+  .home-extra-actions { margin-top: 22px; }
+
+  /* ---------- MIS TEMAS / formularios tipo "arcilla" ---------- */
+  .duel-input {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: var(--radius-clay-sm);
+    border: 3px solid var(--color-ink);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.92rem;
+    box-shadow: 3px 3px 0 var(--color-ink);
+  }
+  .duel-input::placeholder { color: var(--color-ink-soft); font-weight: 600; }
+  .duel-input:focus { outline: none; border-color: var(--color-secondary); }
+
+  .mytopic-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .mytopic-list {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .mytopic-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-surface);
+    border: 3px solid var(--color-ink);
+    border-radius: var(--radius-clay-sm);
+    padding: 10px 12px;
+    box-shadow: 3px 3px 0 var(--color-ink);
+    text-align: left;
+  }
+
+  .mytopic-item-cat {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-ink);
+    background: var(--color-warn);
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+
+  .mytopic-item-title {
+    flex: 1;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .mytopic-delete {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--color-ink);
+    background: #ffd9de;
+    color: #a3122e;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .mytopic-empty { display: none; }
+
+  /* ---------- MODO DUELO ---------- */
+  .duel-results-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin: 22px 0 6px;
+  }
+
+  .duel-result-card {
+    flex: 1;
+    background: var(--color-surface);
+    border: 3px solid var(--color-ink);
+    border-radius: var(--radius-clay-md);
+    padding: 18px 10px;
+    box-shadow: 4px 4px 0 var(--color-ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .duel-result-card.duel-winner {
+    border-color: var(--color-warn-dark);
+    background: var(--color-warn);
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 0 var(--color-ink);
+  }
+
+  .duel-player-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+
+  .duel-player-score {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .duel-vs {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink-soft);
+    font-size: 0.85rem;
+  }
+
+  .duel-winner-text {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-ink);
+    font-size: 1.05rem;
+  }
+
   /* ---------- responsive ---------- */
   @media (max-width: 380px) {
     .btn-random { width: 190px; height: 190px; font-size: 1.1rem; }
@@ -645,7 +875,10 @@ body {
   background-color: var(--color-bg);
   color: var(--color-ink);
 }
-h1, h2, h3, .btn-random, .btn-primary, .brand, .phase-label, .reveal-title, .phase-topic, .step-num, .reveal-cat, .icon-btn, .btn-ghost {
+/* Ojo: "h1" queda fuera a propósito — .splash-title es un <h1> y necesita
+   su propia fuente pixel-art (ver @layer components), que perdería contra
+   esta regla sin capa si el tag genérico estuviera incluido aquí. */
+.btn-random, .btn-primary, .brand, .phase-label, .reveal-title, .phase-topic, .step-num, .reveal-cat, .icon-btn, .btn-ghost {
   font-family: var(--font-display);
 }
 .ring-time { font-family: var(--font-mono); }

@@ -1,12 +1,13 @@
 /* Service worker: cache-first para permitir uso offline tras la primera visita */
-const CACHE_NAME = "randtopic-v2";
+const CACHE_NAME = "randtopic-v3";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.json",
-  "./icon.svg",
+  "./icon.png",
+  "./logo-hero.png",
 ];
 
 self.addEventListener("install", (event) => {

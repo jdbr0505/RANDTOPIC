@@ -8,11 +8,11 @@
   <meta name="theme-color" content="#f4edff" />
 
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="icon" href="icon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icon.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
 
   <!-- nes.css (acentos "juego": iconos + globo de diálogo) va empaquetado dentro de styles.css -->
   <link rel="stylesheet" href="styles.css" />
@@ -31,10 +31,25 @@
 
   <main class="app">
 
-    <!-- HOME -->
-    <section id="screen-home" class="screen active">
+    <!-- SPLASH -->
+    <section id="screen-splash" class="screen active splash-screen">
+      <div class="splash-particles" aria-hidden="true"></div>
+
+      <div class="splash-logo-wrap">
+        <img src="logo-hero.png" alt="" class="splash-logo" />
+      </div>
+
+      <h1 class="splash-title" aria-label="RANDTOPIC">
+        <span class="splash-title-word" data-text="RAND">RAND</span><span class="splash-title-word splash-title-accent" data-text="TOPIC">TOPIC</span>
+      </h1>
+
       <p class="tagline">Entrena tu memoria. Domina tu oratoria.</p>
 
+      <button id="splash-play-btn" class="btn-primary splash-play-btn">▶ JUGAR</button>
+    </section>
+
+    <!-- HOME -->
+    <section id="screen-home" class="screen">
       <button id="btn-random" class="btn-random">
         <span class="btn-random-label">TEMA<br />ALEATORIO</span>
       </button>
@@ -57,6 +72,11 @@
           <span class="stat-label">días de racha</span>
         </div>
       </div>
+
+      <div class="actions-row home-extra-actions">
+        <button id="home-mytopics-btn" class="btn-ghost">📚 Mis temas</button>
+        <button id="home-duel-btn" class="btn-ghost">⚔️ Modo duelo</button>
+      </div>
     </section>
 
     <!-- REVEAL -->
@@ -64,7 +84,6 @@
       <div id="reveal-card" class="reveal-card">
         <span id="reveal-cat" class="reveal-cat"></span>
         <h2 id="reveal-title" class="reveal-title">…</h2>
-        <p id="reveal-text" class="reveal-text"></p>
       </div>
       <div class="actions-col">
         <button id="reveal-start-btn" class="btn-primary">Comenzar estudio · 15:00</button>
@@ -77,7 +96,7 @@
 
     <!-- STUDY (15 min) -->
     <section id="screen-study" class="screen">
-      <p class="phase-label">FASE DE ESTUDIO</p>
+      <p id="study-phase-label" class="phase-label">FASE DE ESTUDIO</p>
       <h2 id="study-topic-title" class="phase-topic"></h2>
 
       <div class="ring-wrap">
@@ -99,7 +118,7 @@
 
     <!-- SPEAK (1 min) -->
     <section id="screen-speak" class="screen">
-      <p class="phase-label">¡A EXPLICAR EN VOZ ALTA!</p>
+      <p id="speak-phase-label" class="phase-label">¡A EXPLICAR EN VOZ ALTA!</p>
       <h2 id="speak-topic-title" class="phase-topic"></h2>
 
       <div class="ring-wrap">
@@ -118,7 +137,7 @@
       </div>
     </section>
 
-    <!-- SUMMARY -->
+    <!-- SUMMARY (modo individual) -->
     <section id="screen-summary" class="screen">
       <p class="phase-label"><i class="nes-icon trophy is-small" aria-hidden="true"></i> SESIÓN COMPLETADA</p>
       <h2 id="summary-topic-title" class="phase-topic"></h2>
@@ -138,6 +157,83 @@
       </div>
     </section>
 
+    <!-- MIS TEMAS -->
+    <section id="screen-mytopics" class="screen">
+      <p class="phase-label">📚 MIS TEMAS</p>
+      <h2 class="phase-topic">Agrega tus propios temas</h2>
+      <p class="phase-hint">Se mezclan con el banco de temas al presionar "Tema aleatorio".</p>
+
+      <form id="mytopic-form" class="mytopic-form">
+        <input id="mytopic-cat" type="text" maxlength="24" placeholder="Categoría (ej. Cine)" class="duel-input" required />
+        <input id="mytopic-title" type="text" maxlength="70" placeholder="Título del tema" class="duel-input" required />
+        <button type="submit" class="btn-primary">+ Agregar tema</button>
+      </form>
+
+      <ul id="mytopic-list" class="mytopic-list"></ul>
+      <p id="mytopic-empty" class="phase-hint mytopic-empty">Todavía no agregas ningún tema propio.</p>
+
+      <div class="actions-col">
+        <button id="mytopics-home-btn" class="btn-ghost">Volver al inicio</button>
+      </div>
+    </section>
+
+    <!-- MODO DUELO: configuración -->
+    <section id="screen-duel-setup" class="screen">
+      <p class="phase-label">⚔️ MODO DUELO</p>
+      <h2 class="phase-topic">Dos jugadores, un mismo tema</h2>
+      <p class="phase-hint">Cada quien estudia y explica por turnos. Al final, comparan qué tan bien lo hicieron.</p>
+
+      <form id="duel-setup-form" class="mytopic-form">
+        <input id="duel-p1-name" type="text" maxlength="16" placeholder="Jugador 1" class="duel-input" />
+        <input id="duel-p2-name" type="text" maxlength="16" placeholder="Jugador 2" class="duel-input" />
+        <button id="duel-start-btn" type="submit" class="btn-primary">🎲 Elegir tema y comenzar</button>
+      </form>
+
+      <div class="actions-col">
+        <button id="duel-setup-cancel-btn" class="btn-ghost">Cancelar</button>
+      </div>
+    </section>
+
+    <!-- MODO DUELO: calificar al jugador que acaba de hablar -->
+    <section id="screen-duel-rate" class="screen">
+      <p class="phase-label">⚔️ CALIFICA A <span id="duel-rate-player"></span></p>
+      <h2 id="duel-rate-topic" class="phase-topic"></h2>
+      <p class="phase-hint">¿Qué tan bien explicó el tema?</p>
+
+      <div class="confidence-row" id="duel-rate-row">
+        <button class="confidence-btn" data-value="1">😵</button>
+        <button class="confidence-btn" data-value="2">😕</button>
+        <button class="confidence-btn" data-value="3">🙂</button>
+        <button class="confidence-btn" data-value="4">😄</button>
+        <button class="confidence-btn" data-value="5">🤩</button>
+      </div>
+    </section>
+
+    <!-- MODO DUELO: resultados -->
+    <section id="screen-duel-summary" class="screen">
+      <p class="phase-label"><i class="nes-icon trophy is-small" aria-hidden="true"></i> RESULTADOS DEL DUELO</p>
+      <h2 id="duel-summary-title" class="phase-topic"></h2>
+
+      <div class="duel-results-row">
+        <div class="duel-result-card" id="duel-result-p1">
+          <span class="duel-player-name" id="duel-p1-label"></span>
+          <span class="duel-player-score" id="duel-p1-score">–</span>
+        </div>
+        <span class="duel-vs">VS</span>
+        <div class="duel-result-card" id="duel-result-p2">
+          <span class="duel-player-name" id="duel-p2-label"></span>
+          <span class="duel-player-score" id="duel-p2-score">–</span>
+        </div>
+      </div>
+
+      <p id="duel-winner-text" class="phase-hint duel-winner-text"></p>
+
+      <div class="actions-col">
+        <button id="duel-new-btn" class="btn-primary">⚔️ Nuevo duelo</button>
+        <button id="duel-summary-home-btn" class="btn-ghost">Volver al inicio</button>
+      </div>
+    </section>
+
   </main>
 
   <!-- MODAL: AYUDA -->
@@ -146,10 +242,11 @@
       <button class="modal-close" data-close-modal>×</button>
       <h3>¿Cómo se juega?</h3>
       <ol>
-        <li>Presiona <strong>TEMA ALEATORIO</strong>: la app elige un tema entre docenas de categorías (ciencia, historia, arte, filosofía y más).</li>
-        <li>Lee la explicación inicial y presiona <strong>Comenzar estudio</strong> para activar un temporizador de <strong>15 minutos</strong>. Úsalo para investigar por tu cuenta.</li>
+        <li>Presiona <strong>TEMA ALEATORIO</strong>: la app elige un tema entre docenas de categorías (ciencia, historia, arte, filosofía y más), o desde tus propios <strong>Mis temas</strong>.</li>
+        <li>Solo verás el <strong>título y la categoría</strong> — sin pistas. Presiona <strong>Comenzar estudio</strong> para activar un temporizador de <strong>15 minutos</strong> e investiga por tu cuenta.</li>
         <li>Cuando suene la alarma, tendrás <strong>1 minuto</strong> para explicar el tema en voz alta, como si le enseñaras a alguien más.</li>
         <li>Al terminar, califica qué tan segura te sentiste. Tu historial y tu racha de días se guardan en este dispositivo.</li>
+        <li>Prueba el <strong>Modo Duelo</strong> para competir dos jugadores con el mismo tema.</li>
       </ol>
     </div>
   </div>
