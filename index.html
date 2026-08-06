@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>RANDTOPIC</title>
+  <meta name="description" content="Entrena tu memoria y tu oratoria: elige un tema al azar, apréndelo en 15 minutos y explícalo en 1." />
+  <meta name="theme-color" content="#0b0c1a" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="bg-glow"></div>
+
+  <header class="topbar">
+    <span class="brand">RAND<span class="brand-accent">TOPIC</span></span>
+    <div class="topbar-actions">
+      <button id="btn-help" class="icon-btn" aria-label="Ayuda">?</button>
+      <button id="btn-about" class="icon-btn" aria-label="Acerca de">i</button>
+    </div>
+  </header>
+
+  <main class="app">
+
+    <!-- HOME -->
+    <section id="screen-home" class="screen active">
+      <p class="tagline">Entrena tu memoria. Domina tu oratoria.</p>
+
+      <button id="btn-random" class="btn-random">
+        <span class="btn-random-label">TEMA<br />ALEATORIO</span>
+      </button>
+
+      <div class="how-it-works">
+        <div class="step"><span class="step-num">1</span><span>Elige un tema al azar</span></div>
+        <div class="step"><span class="step-num">2</span><span>Estúdialo 15 minutos</span></div>
+        <div class="step"><span class="step-num">3</span><span>Explícalo en voz alta 1 minuto</span></div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <span id="stat-count" class="stat-value">0</span>
+          <span class="stat-label">temas explorados</span>
+        </div>
+        <div class="stat-card">
+          <span id="stat-streak" class="stat-value">0</span>
+          <span class="stat-label">días de racha</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVEAL -->
+    <section id="screen-reveal" class="screen">
+      <div id="reveal-card" class="reveal-card">
+        <span id="reveal-cat" class="reveal-cat"></span>
+        <h2 id="reveal-title" class="reveal-title">…</h2>
+        <p id="reveal-text" class="reveal-text"></p>
+      </div>
+      <div class="actions-col">
+        <button id="reveal-start-btn" class="btn-primary">Comenzar estudio · 15:00</button>
+        <div class="actions-row">
+          <button id="reveal-again-btn" class="btn-ghost">🎲 Otro tema</button>
+          <button id="reveal-home-btn" class="btn-ghost">Cancelar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDY (15 min) -->
+    <section id="screen-study" class="screen">
+      <p class="phase-label">FASE DE ESTUDIO</p>
+      <h2 id="study-topic-title" class="phase-topic"></h2>
+
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 200 200">
+          <circle class="ring-track" cx="100" cy="100" r="90"></circle>
+          <circle id="study-ring-progress" class="ring-progress ring-study" cx="100" cy="100" r="90"></circle>
+        </svg>
+        <span id="study-time-label" class="ring-time">15:00</span>
+      </div>
+
+      <p class="phase-hint">Investiga, lee, mira videos: usa el tiempo para aprender todo lo que puedas.</p>
+
+      <div class="actions-row">
+        <button id="study-pause-btn" class="btn-ghost">Pausar</button>
+        <button id="study-skip-btn" class="btn-ghost">Saltar a la explicación</button>
+        <button id="study-cancel-btn" class="btn-ghost btn-danger">Cancelar</button>
+      </div>
+    </section>
+
+    <!-- SPEAK (1 min) -->
+    <section id="screen-speak" class="screen">
+      <p class="phase-label">¡A EXPLICAR EN VOZ ALTA!</p>
+      <h2 id="speak-topic-title" class="phase-topic"></h2>
+
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 200 200">
+          <circle class="ring-track" cx="100" cy="100" r="90"></circle>
+          <circle id="speak-ring-progress" class="ring-progress ring-speak" cx="100" cy="100" r="90"></circle>
+        </svg>
+        <span id="speak-time-label" class="ring-time">01:00</span>
+      </div>
+
+      <p class="phase-hint">Habla como si le enseñaras el tema a otra persona. No te detengas a corregirte.</p>
+
+      <div class="actions-row">
+        <button id="speak-finish-btn" class="btn-primary">Terminé antes</button>
+        <button id="speak-cancel-btn" class="btn-ghost btn-danger">Cancelar</button>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section id="screen-summary" class="screen">
+      <p class="phase-label">SESIÓN COMPLETADA</p>
+      <h2 id="summary-topic-title" class="phase-topic"></h2>
+      <p class="phase-hint">¿Qué tan segura te sentiste explicando este tema?</p>
+
+      <div class="confidence-row">
+        <button class="confidence-btn" data-value="1">😵</button>
+        <button class="confidence-btn" data-value="2">😕</button>
+        <button class="confidence-btn" data-value="3">🙂</button>
+        <button class="confidence-btn" data-value="4">😄</button>
+        <button class="confidence-btn" data-value="5">🤩</button>
+      </div>
+
+      <div class="actions-col">
+        <button id="summary-new-btn" class="btn-primary">🎲 Nuevo tema</button>
+        <button id="summary-home-btn" class="btn-ghost">Volver al inicio</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: AYUDA -->
+  <div id="modal-help" class="modal">
+    <div class="modal-card">
+      <button class="modal-close" data-close-modal>×</button>
+      <h3>¿Cómo se juega?</h3>
+      <ol>
+        <li>Presiona <strong>TEMA ALEATORIO</strong>: la app elige un tema entre docenas de categorías (ciencia, historia, arte, filosofía y más).</li>
+        <li>Lee la explicación inicial y presiona <strong>Comenzar estudio</strong> para activar un temporizador de <strong>15 minutos</strong>. Úsalo para investigar por tu cuenta.</li>
+        <li>Cuando suene la alarma, tendrás <strong>1 minuto</strong> para explicar el tema en voz alta, como si le enseñaras a alguien más.</li>
+        <li>Al terminar, califica qué tan segura te sentiste. Tu historial y tu racha de días se guardan en este dispositivo.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- MODAL: ACERCA DE -->
+  <div id="modal-about" class="modal">
+    <div class="modal-card">
+      <button class="modal-close" data-close-modal>×</button>
+      <h3>Acerca de RANDTOPIC</h3>
+      <p>RANDTOPIC es un juego educativo diseñado para entrenar dos habilidades poco practicadas juntas: la <strong>memoria a corto plazo</strong> y la <strong>oratoria</strong>. Al forzar al cerebro a aprender rápido y explicar de inmediato, se fortalece la consolidación activa de la información —una técnica cercana al "active recall" usado en estudios de aprendizaje.</p>
+      <p>Es una Progressive Web App: puedes instalarla en tu pantalla de inicio y usarla sin conexión.</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
