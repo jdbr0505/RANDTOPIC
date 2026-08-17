@@ -1,10 +1,10 @@
 /* Service worker: cache-first para permitir uso offline tras la primera visita */
-const CACHE_NAME = "randtopic-v6";
+const CACHE_NAME = "randtopic-v7";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=5",
-  "./app.js?v=5",
+  "./styles.css?v=6",
+  "./app.js?v=6",
   "./manifest.json",
   "./icon.png",
   "./logo-hero.png",

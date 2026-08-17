@@ -267,13 +267,15 @@
   }
 
   .die-stage {
+    display: block;
     position: relative;
     width: 140px;
     height: 140px;
-    perspective: 900px;
+    perspective: 700px;
   }
 
   .die-cube {
+    display: block;
     position: relative;
     width: 100%;
     height: 100%;
@@ -320,14 +322,14 @@
     align-self: center;
   }
 
-  .die-1 { background: var(--color-primary); transform: rotateY(0deg) translateZ(70px); }
+  .die-1 { background: var(--color-primary); transform: rotateY(0deg) translateZ(70px); filter: brightness(1.08); }
   .die-1 i { background: var(--color-ink); width: 22px; height: 22px; }
-  .die-6 { transform: rotateY(180deg) translateZ(70px); }
-  .die-3 { transform: rotateY(90deg) translateZ(70px); }
-  .die-4 { transform: rotateY(-90deg) translateZ(70px); }
-  .die-5 { background: var(--color-accent); transform: rotateX(90deg) translateZ(70px); }
+  .die-6 { transform: rotateY(180deg) translateZ(70px); filter: brightness(0.72); }
+  .die-3 { transform: rotateY(90deg) translateZ(70px); filter: brightness(0.9); }
+  .die-4 { transform: rotateY(-90deg) translateZ(70px); filter: brightness(0.82); }
+  .die-5 { background: var(--color-accent); transform: rotateX(90deg) translateZ(70px); filter: brightness(1.18); }
   .die-5 i { background: var(--color-ink); }
-  .die-2 { background: var(--color-secondary); transform: rotateX(-90deg) translateZ(70px); }
+  .die-2 { background: var(--color-secondary); transform: rotateX(-90deg) translateZ(70px); filter: brightness(0.68); }
   .die-2 i { background: #fff; }
 
   /* patrones de pips clásicos de dado, en cuadrícula 3x3 */
