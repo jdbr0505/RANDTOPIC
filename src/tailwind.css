@@ -271,7 +271,7 @@
     position: relative;
     width: 140px;
     height: 140px;
-    perspective: 700px;
+    perspective: 480px;
   }
 
   .die-cube {
@@ -310,7 +310,9 @@
     background: var(--color-surface);
     border: 5px solid var(--color-ink);
     border-radius: 26px;
-    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.55), inset 0 -6px 10px rgba(0, 0, 0, 0.18);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .die-face i {
