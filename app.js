@@ -104,6 +104,24 @@ function showScreen(name) {
   els[name].classList.add("active");
   // la barra superior se oculta solo en el splash (el logo grande ya presenta la marca ahí)
   qs(".topbar").classList.toggle("is-hidden", name === "splash");
+  toggleSplashBalatro(name === "splash");
+}
+
+/* fondo shader (Balatro/ogl): solo corre mientras el splash está activo, para ahorrar GPU/batería */
+let balatroModule = null;
+function toggleSplashBalatro(active) {
+  const bg = qs("#balatro-bg");
+  bg.classList.toggle("is-active", active);
+  if (!active) {
+    balatroModule?.stopBalatro();
+    return;
+  }
+  import("./balatro.js")
+    .then((mod) => {
+      balatroModule = mod;
+      mod.startBalatro(bg);
+    })
+    .catch(() => { /* CDN sin conexión: se queda el fondo estático */ });
 }
 
 function fmtTime(totalSeconds) {

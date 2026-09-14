@@ -100,18 +100,18 @@ export function startBalatro(container, options = {}) {
     color2 = "#7c5cff", // violeta
     color3 = "#2b2140", // tinta
     spinRotation = -2.0,
-    spinSpeed = 3.2,
-    contrast = 3.0,
-    lighting = 0.35,
+    spinSpeed = 5.0,
+    contrast = 3.5,
+    lighting = 0.4,
     spinAmount = 0.25,
-    pixelFilter = 900.0,
+    pixelFilter = 745.0,
     isRotate = false,
     mouseInteraction = true,
   } = options;
 
-  const renderer = new Renderer({ alpha: true });
+  const renderer = new Renderer();
   const gl = renderer.gl;
-  gl.clearColor(0, 0, 0, 0);
+  gl.clearColor(0, 0, 0, 1);
 
   function resize() {
     renderer.setSize(container.offsetWidth, container.offsetHeight);
