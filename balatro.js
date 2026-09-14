@@ -1,6 +1,6 @@
 /* Balatro shader background — vanilla JS port (no React), ogl loaded via CDN ESM.
    Colors match RANDTOPIC brand: coral / violeta / tinta. */
-import { Renderer, Program, Mesh, Triangle } from "https://cdn.jsdelivr.net/npm/ogl@1.0.11/src/index.js";
+import { Renderer, Program, Mesh, Triangle } from "./vendor/ogl/index.js";
 
 const vertexShader = `
 attribute vec2 uv;
